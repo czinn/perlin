@@ -125,26 +125,36 @@ double pnoise3d(double x, double y, double z, double persistence, int octaves, i
    return total;
 }
 
-int main() {
-    int i = 0, x = 0, y = 0;
-    double n;
-    int h[200];
+void pbatch1d(double *grid, double x, int xs, double step, double persistence, int octaves, int seed) {
+    int i = 0, j = 0;
+    int octaveStart = 0;
+    double minFrequency = pow(0.5, octaves - 1);
+    int maxOctaveSize = ceil((x + xs * step) / minFrequency) - floor(x / minFrequency) + 1;
+    double octaveData[maxOctaveSize];
+    double frequency = 1.0;
+    double amplitude = 1.0;
+    int intx;
+    double fracx;
 
-    for(i = 0; i < 200; i++) {
-        n = pnoise1d(i * 0.05, 0.5, 5, 12123);
-        int c = (int)((n + 1) * 30);
-        h[i] = c;
-    }
-
-    for(y = 60; y >= 0; y--) {
-        for(x = 0; x < 200; x++) {
-            if(h[x] >= y)
-                printf("#");
-            else
-                printf(" ");
+    for(i = 0; i < octaves; i++) {
+        // Initialize the octaveData
+        octaveStart = floor(x / frequency);
+        for(j = 0; octaveStart + j <= ceil((x + xs * step) / frequency); j++) {
+            octaveData[j] = noise1d(octaveStart + j, i, seed);
         }
-        printf("\n");
-    }
+        // Interpolate and add to the things
+        for(j = 0; j < xs; j++) {
+            if(i == 0)
+                grid[j] = 0;
+            intx = (int)((x + j * step) * frequency);
+            fracx = (x + j * step) * frequency - intx;
+            grid[j] += interpolate(octaveData[intx - octaveStart], octaveData[intx - octaveStart + 1], fracx) * amplitude;
+        }
 
-    return 0;
+        frequency /= 2;
+        amplitude *= persistence;
+    }
+    /*for(i = 0; i < xs; i++) {
+        grid[i] = pnoise1d(x + i * step, persistence, octaves, seed);
+    }*/
 }
