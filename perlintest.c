@@ -3,30 +3,34 @@
 #include "perlin.h"
 
 int main() {
-    int i = 0, c = 0;
+    int i = 0, j = 0, c = 0;
     double n;
-    double row[10000];
+    double g[50][50];
     clock_t t1, t2, t3;
 
     t1 = clock();
 
-    for(i = 0; i < 10000; i++) {
-        n = pnoise1d(i * 0.1, 0.5, 5, 12124);
-        c = (int)((n + 1) * 4);
-        if(i < 50)
+    for(i = 0; i < 50; i++) {
+        for(j = 0; j < 50; j++) {
+            n = pnoise2d(j * 0.1, i * 0.1, 0.5, 5, 12124);
+            c = (int)((n + 1) * 4);
             printf("%d ", c);
+        }
+        printf("\n");
     }
-    printf("\n");
+    printf("\n\n");
 
     t2 = clock();
 
-    pbatch1d(row, 0.0, 10000, 0.1, 0.5, 5, 12124);
-    for(i = 0; i < 10000; i++) {
-        c = (int)((row[i] + 1) * 4);
-        if(i < 50)
+    pbatch2d(g, 0.0, 0.0, 50, 50, 0.1, 0.5, 5, 12124);
+    for(i = 0; i < 50; i++) {
+        for(j = 0; j < 50; j++) {
+            c = (int)((g[i][j] + 1) * 4);
             printf("%d ", c);
+        }
+        printf("\n");
     }
-    printf("\n");
+    printf("\n\n");
 
     t3 = clock();
 
