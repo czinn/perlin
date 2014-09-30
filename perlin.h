@@ -23,6 +23,4 @@ double pnoise2d(double x, double y, double persistence, int octaves, int seed);
 
 double pnoise3d(double x, double y, double z, double persistence, int octaves, int seed);
 
-void pbatch1d(double *grid, double x, int xs, double step, double persistence, int octaves, int seed);
-
 #endif
